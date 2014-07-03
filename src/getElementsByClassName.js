@@ -1,3 +1,4 @@
+
 var getElementsByClassName = function(className, element){
   var results = [];
    
@@ -23,7 +24,6 @@ var getElementsByClassName = function(className, element){
     	
     results = [].concat.apply([], results);
   });
- 
   console.log(results);
   return results; 
 };

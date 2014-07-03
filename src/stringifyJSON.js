@@ -26,15 +26,15 @@ var stringifyJSON = function(obj) {
     finalObj.push(isArr ? '[' : '{');
 	
 	for (var key in obj) {
-	  //handle SIMPLE **NESTED** object
 	  isLastCounter += 1;
 	  var currentObj;
 	  var isLastProp = isLastCounter === propCount ? true : false;
 	  
+	  //handle SIMPLE **NESTED** object
 	  //pass all nulls, strings, and numbers
 	  if(obj[key] === null || typeof(obj[key]) !== "object") {
 		//screen all undefs and functions  
-		if(obj[key] !== undefined && typeof(obj[key]) !== 'function') {
+		if(obj[key] !== undefined && typeof(obj[key]) !== 'function') {	
 		  //format strings	
           if(typeof(obj[key]) === 'string' ) {
 		    obj[key] = '"' + obj[key] + '"';
@@ -45,7 +45,16 @@ var stringifyJSON = function(obj) {
 		  }
 		  //format nums (convert to strings)
 		  if(typeof(obj[key]) !== 'string') {
+		    
+		    /*
+			//////
+			***ALTERNATIVELY COMMENT/UNCOMMENT LINES 55 & 56 AND REFRESH TO
+			SEE THE DYNAMIC I AM REFERRING TO***
+			/////
+			*/
 		    obj[key] = obj[key].toString();
+		    //obj[key] = '"' + obj[key] + "'";
+		    
 		  }
 		  //eliminate white space in value
 		  obj[key] = obj[key].replace(/\s+/g, '');
@@ -53,10 +62,11 @@ var stringifyJSON = function(obj) {
 		}
 	  } else {
 	  //handle COMPLEX **NESTED** object
-	    finalObj.push('"' + key + '":');
+	  finalObj.push('"' + key + '":');
+	  
 	  if(!isArr) {
 	  }
-	  //recurse nested objects
+	  //RECURSE nested objects
 	  finalObj.push(stringifyJSON(obj[key]));
 	  }
 	  

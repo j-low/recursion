@@ -9,17 +9,18 @@ var getElementsByClassName = function(className, element){
     results.push(element);
   }
   
-  $(element).children().each(function() {
+  $(element).children().each(function() {  
     if(this.hasChildNodes()) {
-	  if(getElementsByClassName(className, this).length !== 0) {
-		 results.push(getElementsByClassName(className, this));
-	  }
+	  results.push(getElementsByClassName(className, this)); 
+	} else {
+	  if (this.classList.contains(className)) {
+	    if (element.classList.contains(className)) {
+			results.push(this);
+		}
+	  }	
+		
 	}
-    
-    if (this.classList.contains(className)) {
-	  results.push(this);
-	}
-	
+    	
     results = [].concat.apply([], results);
   });
  

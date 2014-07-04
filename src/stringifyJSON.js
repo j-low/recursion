@@ -1,90 +1,56 @@
 var stringifyJSON = function(obj) {
-
-  if(obj === null || typeof(obj) !== "object") {
-    // handle SIMPLE OBJECT or screen undefined/function object
-    if(obj !== undefined && typeof(obj) !== 'function') {
-	  if (typeof(obj) === 'string') {
-	    obj = '"' + obj + '"';
-	  } else if(obj === null){
-	    obj = 'null';
-	  } else {
-	    obj = obj.toString();
-	  }
-	  return obj;
+  var isArr = (obj instanceof Array);
+  
+  //screen undefs and functions; pass strings, nums and nulls
+  if(typeof(obj) !== 'object' || obj === null) {
+    if(typeof(obj) === 'function' || typeof(obj) === 'undefined') {
+		return;
+	} 
+    if (typeof(obj) === 'string'){
+	  obj = '"' + obj + '"';
+	} else {
+	  obj = String(obj);
 	}
-  } else { 
-    // handle ARRAY or OBJECT LITERAL
-    var finalObj = [];
-	var propCount = 0;
-	var isLastCounter = 0;	
-	var isArr = (obj instanceof Array) ? true : false;
-
-    for (var prop in obj) {
-	  propCount += 1;
-	}
-	
-    finalObj.push(isArr ? '[' : '{');
+	return obj;
+  }  else {
+    //pass arrays, object literals and nulls.
+	var finalObj = [];
 	
 	for (var key in obj) {
-	  isLastCounter += 1;
-	  var currentObj;
-	  var isLastProp = isLastCounter === propCount ? true : false;
-	  
-	  //handle SIMPLE **NESTED** object
-	  //pass all nulls, strings, and numbers
-	  if(obj[key] === null || typeof(obj[key]) !== "object") {
-		//screen all undefs and functions  
-		if(obj[key] !== undefined && typeof(obj[key]) !== 'function') {	
-		  //format strings	
-          if(typeof(obj[key]) === 'string' ) {
-		    obj[key] = '"' + obj[key] + '"';
-		  }
-		  //format nulls
-		  if(obj[key] === null) {
-		    obj[key] = 'null';
-		  }
-		  //format nums (convert to strings)
-		  if(typeof(obj[key]) !== 'string') {
-		    
-		    /*
-			//////
-			***ALTERNATIVELY COMMENT/UNCOMMENT LINES 55 & 56 AND REFRESH TO
-			SEE THE DYNAMIC I AM REFERRING TO***
-			/////
-			*/
-		    obj[key] = obj[key].toString();
-		    //obj[key] = '"' + obj[key] + "'";
-		    
-		  }
-		  //eliminate white space in value
-		  obj[key] = obj[key].replace(/\s+/g, '');
-		  finalObj.push(isArr ? obj[key] : '"' + key + '":' + obj[key]);
-		}
-	  } else {
-	  //handle COMPLEX **NESTED** object
-	  finalObj.push('"' + key + '":');
-	  
-	  if(!isArr) {
-	  }
-	  //RECURSE nested objects
-	  finalObj.push(stringifyJSON(obj[key]));
+	  var isStringifiable = false;	
+	  if (typeof(obj[key]) === 'string') {
+		  isStringifiable = true;
+	     obj[key] = '"'  + obj[key] + '"';
+	  } else if (typeof (obj[key]) === 'object' && (obj[key] !== null)) {
+		 isStringifiable = true;
+	     //recurse if obj[key] is array or object literal; screen null objects
+	    obj[key] = stringifyJSON(obj[key]);
+	  } else if (typeof(obj[key]) === 'number' || obj[key] === null || typeof(obj[key]) === 'boolean') {
+		isStringifiable = true;
+	    obj[key] = String(obj[key]);
 	  }
 	  
-	  if(!isLastProp) {
-	    finalObj.push(",");	
-	  }
+      if(isStringifiable) {
+	    finalObj.push((isArr ? '' : '"' + key + '":') + obj[key]);
+      }
 	}
 	
-	//remove last value if === ","
-	if(finalObj[finalObj.length-1] === ",") {
-	  finalObj = finalObj.slice(0, finalObj.length-1);
-	}
-	
-	//cap complex object with closing bracket/brace; collapse white space between values & return
-	finalObj.push(isArr ? ']' : '}');
-	finalObj = finalObj.join('');
+	finalObj = (isArr ? '[' : '{') + String(finalObj) + (isArr ? ']' : '}');
 	return finalObj;
-  } 
+  }
+}; 
+
+var compareAll = function(arr) {
+  for(var i = 0; i < arr.length; i++) {
+	console.log('OURS: ' + stringifyJSON(arr[i]));
+	console.log('THEIRS: ' + JSON.stringify(arr[i]));
+  }	
 };
+
+
+
+
+
+
 
 
